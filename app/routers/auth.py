@@ -11,6 +11,6 @@ router = APIRouter(
 )
 
 
-@router.post("/signup", response_description="create uTer")
+@router.post("/signup", response_description="create user")
 async def create_user(request: Request, user_auth: AuthModel = Body(...)):
 	await try_create_user(request, user_auth)
