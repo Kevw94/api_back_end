@@ -26,6 +26,17 @@ async def create_user(user_auth: AuthModel = Body(...)):
 
 @router.post("/login", response_description="user Login")
 async def try_login(user_login: LoginModel = Body(...)):
+	"""Try to login a user who wants to login
+
+	Args:
+		user_login (LoginModel, optional): accept username and password from the body. Defaults to Body(...).
+
+	Raises:
+		HTTPException: 401 if password is incorrect or username is not found in the DB
+
+	Returns:
+		json: access token with the acces_token and the authentication method
+	"""
 	user = await try_login_user(user_login)
 	print(user)
 	if not user:
