@@ -2,13 +2,12 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt
 from app.core.config import config
 from datetime import datetime, timedelta
-from fastapi import Depends, FastAPI, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 
 from app.models.auth import TokenData
 from app.models.users import UserModel
 from app.core.config import db
-# from pydantic import BaseModel
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -65,6 +64,19 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
+	"""Decode JWT token sent in headers and try to find user in db with information
+
+	Args:
+		token (str): JWT present in headers. Defaults to Depends(oauth2_scheme).
+
+	Raises:
+		credentials_exception: no Authorization found
+		credentials_exception: if user is not present in the decode
+		credentials_exception: if user is not found in the db 
+
+	Returns:
+		UserModel: return user 
+	"""
 	credentials_exception = HTTPException(
 		status_code=status.HTTP_401_UNAUTHORIZED,
 		detail="Could not validate credentials",
@@ -81,7 +93,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 	user = await db["users"].find_one({
 		"username": username
 	})
-	print(user, "user")
 	if user is None:
 		raise credentials_exception
 	return user
@@ -89,6 +100,17 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 
 
 async def get_current_active_user(current_user: UserModel = Depends(get_current_user)):
+	"""get active user with headers in request
+
+	Args:
+		current_user (UserModel): user retreived from db. Defaults to Depends(get_current_user).
+
+	Raises:
+		HTTPException: if user is disabled
+
+	Returns:
+		UserModel: return user found in db
+	"""
 	is_disabled_user = current_user["disabled"]
 	if is_disabled_user:
 		raise HTTPException(status_code=400, detail="Inactive user")
