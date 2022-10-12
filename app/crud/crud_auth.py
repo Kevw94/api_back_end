@@ -1,15 +1,20 @@
-from app.core.config import config
-from datetime import datetime, timedelta
+from datetime import datetime
 from app.core.config import db
+from app.core.security import get_password_hash, verify_password
 from app.models.auth import AuthModel, LoginModel
-from passlib.context import CryptContext
-from jose import jwt
+from bson.json_util import dumps
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 async def try_create_user(user_auth: AuthModel):
+	"""Insert and create one user in DB, create an hashed password
+
+	Args:
+		user_auth (AuthModel): accept a username and pssword from the Body
+
+	Returns:
+		success: 201
+	"""
 	hashed_password = get_password_hash(user_auth.password)
-	print(hashed_password)
 	created_at = datetime.now()
 	new_user = {
 		"username": user_auth.username,
@@ -17,16 +22,21 @@ async def try_create_user(user_auth: AuthModel):
 		"created_at": created_at
 	}
 	db["users"].insert_one(new_user)
-	return { "success": new_user }
+	return { "success": 201 }
 
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
 
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+async def try_login_user(user_login: LoginModel):
+	"""Verify if user exists in DB, if yes, verify if password matches
 
-async def user_logged(user_login: LoginModel):
+	Auth a user: verify if the user exists ans if the hash of the password mathes with verify_password
+
+	Args:
+		user_login (LoginModel): Body from request containing password and username
+
+	Returns:
+		UserModel: user if user pass check tests
+	"""
 	is_user_found = await db["users"].find_one({
 		"username": user_login.username
 	})
@@ -38,13 +48,3 @@ async def user_logged(user_login: LoginModel):
 			return False
 	else:
 		return False
-
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, config["SECRET_KEY"], algorithm=config["ALGORITHM"])
-    return encoded_jwt

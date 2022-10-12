@@ -31,6 +31,6 @@ class UserModel(BaseModel):
 		schema_extra = {
 			"example": {
 				"username": "Jane Doe",
-				"password": "jdoe@example.com",
+				"password": "pass123",
 			}
 		}
