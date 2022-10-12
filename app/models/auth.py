@@ -7,7 +7,6 @@ class AuthModel(BaseModel):
 	username: str
 	password: str
 	created_at: datetime = None
-	# created_at: datetime.datetime = datetime.datetime.now()
 
 
 	class Config:
