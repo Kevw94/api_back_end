@@ -22,6 +22,7 @@ class UserModel(BaseModel):
 	id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
 	username: str = Field(...)
 	password: str = Field(...)
+	created_at: datetime.datetime = Field(...)
 
 	class Config:
 		allow_population_by_field_name = True
