@@ -23,6 +23,7 @@ class UserModel(BaseModel):
 	username: str = Field(...)
 	password: str = Field(...)
 	created_at: datetime.datetime = Field(...)
+	# disabled: bool | None = None
 
 	class Config:
 		allow_population_by_field_name = True
