@@ -6,7 +6,9 @@ class AuthModel(BaseModel):
 	id: str | None = None
 	username: str
 	password: str
-	created_at: datetime | None = datetime
+	created_at: datetime = None
+	# created_at: datetime.datetime = datetime.datetime.now()
+
 
 	class Config:
 		orm_mode = True
