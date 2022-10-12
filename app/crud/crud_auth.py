@@ -19,7 +19,8 @@ async def try_create_user(user_auth: AuthModel):
 	new_user = {
 		"username": user_auth.username,
 		"password": hashed_password,
-		"created_at": created_at
+		"created_at": created_at,
+		"disabled": False
 	}
 	db["users"].insert_one(new_user)
 	return { "success": 201 }
