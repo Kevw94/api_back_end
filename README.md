@@ -17,6 +17,8 @@ PATCH: /USERS/ME
 
 GET: /USERS/:ID
 
+PATCH: /USERS/ME/PASSWORD
+
 __________________________
 
 ## POSTS

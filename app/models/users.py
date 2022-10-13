@@ -55,3 +55,7 @@ class UserToFrontModel(BaseModel):
 				"created_at": "date",
 			}
 		}
+	
+class ModifPasswordModel(BaseModel):
+	current_password: str
+	modified_password: str
