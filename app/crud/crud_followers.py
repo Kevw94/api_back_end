@@ -48,6 +48,12 @@ async def try_get_users_following(current_user: UserModel):
 	for i in user_followed:
 		articles_users = await db["posts"].find({"userId": i["followingId"]}).to_list(100)
 		for j in articles_users:
-			print(j)
 			articles.append(j)
 	return articles
+
+
+async def try_get_following_id(current_user: UserModel):
+	find_followers = await db["followers"].find({"followingId": current_user["_id"]}).to_list(100)
+	return find_followers
+
+
