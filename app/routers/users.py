@@ -36,6 +36,6 @@ async def get_one_user_by_id( user_id: str):
 		}
 
 
-@router.patch("/users/me", dependencies=[Depends(get_current_active_user)],response_model=UserModel)
+@router.patch("/users/me", dependencies=[Depends(get_current_active_user)])
 async def change_username_me(current_user: UserModel = Depends(get_current_active_user), modif_username: UserModel = Body(...)):
 	return await try_change_username(current_user, modif_username)
