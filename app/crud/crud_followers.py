@@ -61,4 +61,8 @@ async def try_get_my_followings(current_user: UserModel):
 	find_followings = await db["followers"].find({"userId": current_user["_id"]}).to_list(100)
 	return find_followings
 
+async def try_delete_following(follower_id: str, current_user: UserModel):
+	await db["followers"].delete_one({"$and": [{"followingId": ObjectId(follower_id), "userId": current_user["_id"]} ]})
+	return True
+
 
