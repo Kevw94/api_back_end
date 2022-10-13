@@ -41,6 +41,8 @@ POST: /FOLLOWERS
 
 GET: /FOLLOWERS/ME
 
+GET: /FOLLOWERS/FOLLOWING
+
 DELETE: /FOLLOWERS/:ID
 
 __________________________

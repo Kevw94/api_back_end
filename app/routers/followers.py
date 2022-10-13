@@ -4,7 +4,7 @@ from app.core.config import config
 from fastapi import APIRouter, Depends, Body
 from typing import List
 from app.core.security import get_current_active_user
-from app.crud.crud_followers import try_get_users_following, try_insert_followers
+from app.crud.crud_followers import try_get_following_id, try_get_users_following, try_insert_followers
 from app.models.followers import FollowersModel, FollowedModel
 from datetime import datetime
 from app.core.config import db
@@ -28,3 +28,15 @@ async def create_follower(current_user: UserModel = Depends(get_current_active_u
 async def posts_users_me_follow(current_user: UserModel = Depends(get_current_active_user)):
 	response = await try_get_users_following(current_user)
 	return response
+
+@router.get('/followers/me', response_description="list of all my followers", response_model=List[FollowersModel])
+async def get_all_my_followers(current_user: UserModel = Depends(get_current_active_user)):
+	response = await try_get_following_id(current_user)
+	print(response)
+	if response == None:
+		return { "succes": "user doesn't have followers"}
+	else: 
+		return response
+
+# @router.get("/followers/following")
+
