@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from typing import List
 
 from app.core.security import get_current_active_user
-from app.crud.crud_comments import insert_comment_in_db, try_get_comments_in_db, try_patch_comment_in_db
+from app.crud.crud_comments import insert_comment_in_db, try_get_comments_in_db, try_get_my_comments_in_db, try_patch_comment_in_db
 from app.models.comments import CommentsModel
 from app.models.users import UserModel
 
@@ -20,9 +20,16 @@ async def create_comment(current_user: UserModel = Depends(get_current_active_us
 	return {"success": "Comment created"}
 
 
+@router.get("/comments/me", response_description="list of my commentaries", response_model=List[CommentsModel])
+async def get_my_comments(current_user: UserModel = Depends(get_current_active_user)):
+	get_comments = await try_get_my_comments_in_db(current_user)
+	return get_comments
+
+
 @router.get("/comments/posts/{post_id}",  dependencies=[Depends(get_current_active_user)], response_model=List[CommentsModel])
 async def get_comment_from_post_id(post_id: str):
 	return await try_get_comments_in_db(post_id)
+
 
 
 @router.patch("/comments/{comments_id}")
