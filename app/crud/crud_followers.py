@@ -2,11 +2,12 @@ from datetime import datetime
 from app.core.config import db
 from bson import ObjectId
 from typing import List
+from app.models.followers import FollowedModel
 
 from app.models.users import UserModel
 
 
-async def try_insert_followers(current_user: UserModel, create_followers: str):
+async def try_insert_followers(current_user: UserModel, create_followers: FollowedModel):
 	"""insert followers in db
 
 	Args:
