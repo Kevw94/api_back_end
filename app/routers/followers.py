@@ -4,7 +4,7 @@ from app.core.config import config
 from fastapi import APIRouter, Depends, Body
 from typing import List
 from app.core.security import get_current_active_user
-from app.crud.crud_followers import try_get_following_id, try_get_my_followings, try_get_users_following, try_insert_followers
+from app.crud.crud_followers import try_delete_following, try_get_following_id, try_get_my_followings, try_get_users_following, try_insert_followers
 from app.models.followers import FollowersModel, FollowedModel
 from datetime import datetime
 from app.core.config import db
@@ -27,13 +27,11 @@ async def create_follower(current_user: UserModel = Depends(get_current_active_u
 @router.get("/posts/followers/me", response_description="list of posts I Follow users", dependencies=[Depends(get_current_active_user)], response_model=List[PostModel])
 async def posts_users_me_follow(current_user: UserModel = Depends(get_current_active_user)):
 	response = await try_get_users_following(current_user)
-	print(response)
 	return response
 
 @router.get('/followers/me', response_description="list of all my followers", response_model=List[FollowersModel])
 async def get_all_my_followers(current_user: UserModel = Depends(get_current_active_user)):
 	response = await try_get_following_id(current_user)
-	print(response)
 	if response == None:
 		return { "succes": "user doesn't have followers"}
 	else: 
@@ -45,6 +43,9 @@ async def get_all_my_following(current_user: UserModel = Depends(get_current_act
 	if response is None:
 		return { "succes": "user doesn't have followers"}
 	else: 
-		print(response)
 		return response
 
+@router.delete('/followers/{follower_id}', response_description="successful deleted")
+async def delete_following_by_id(follower_id: str, current_user: UserModel = Depends(get_current_active_user)):
+	await try_delete_following(follower_id, current_user)
+	return { "success": "user has been unfollowed" }
