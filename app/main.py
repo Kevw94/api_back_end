@@ -8,9 +8,9 @@ app = FastAPI(
     redoc_url=f"{config['APP_PREFIX']}/redoc",
 )
 
-app.include_router(users.router)
-app.include_router(root.router)
-app.include_router(auth.router)
-app.include_router(posts.router)
-app.include_router(followers.router)
-app.include_router(comments.router)
+app.include_router(users.router, tags=["users"])
+app.include_router(root.router, tags=["root"])
+app.include_router(auth.router, tags=["auth"])
+app.include_router(posts.router, tags=["posts"])
+app.include_router(followers.router, tags=["followers"])
+app.include_router(comments.router, tags=["comments"])
