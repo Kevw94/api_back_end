@@ -38,3 +38,20 @@ class UserModel(BaseModel):
 				"password": "pass123",
 			}
 		}
+
+class UserToFrontModel(BaseModel):
+	id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+	username: str = Field(...)
+	created_at: Optional[datetime.datetime]
+
+	class Config:
+		allow_population_by_field_name = True
+		arbitrary_types_allowed = True
+		json_encoders = {ObjectId: str}
+		schema_extra = {
+			"example": {
+				"id": "ObjectId(eazeazrzafs2332)",
+				"username": "Jane Doe",
+				"created_at": "date",
+			}
+		}
