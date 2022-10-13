@@ -4,12 +4,12 @@ from app.core.config import config
 from fastapi import APIRouter, Depends, Body
 from typing import List
 from app.core.security import get_current_active_user
-from app.crud.crud_followers import try_delete_following, try_get_following_id, try_get_my_followings, try_get_users_following, try_insert_followers
+from app.crud.crud_followers import try_delete_following, try_get_my_followers, try_get_my_followings, try_get_users_following, try_insert_followers
 from app.models.followers import FollowersModel, FollowedModel
 from datetime import datetime
 from app.core.config import db
 from app.models.posts import PostModel
-from app.models.users import UserModel
+from app.models.users import UserModel, UserToFrontModel
 
 router = APIRouter(
     prefix=f"{config['APP_PREFIX']}"
@@ -29,15 +29,15 @@ async def posts_users_me_follow(current_user: UserModel = Depends(get_current_ac
 	response = await try_get_users_following(current_user)
 	return response
 
-@router.get('/followers/me', response_description="list of all my followers", response_model=List[FollowersModel])
+@router.get('/followers/me', response_description="list of all my followers", response_model=List[UserToFrontModel])
 async def get_all_my_followers(current_user: UserModel = Depends(get_current_active_user)):
-	response = await try_get_following_id(current_user)
+	response = await try_get_my_followers(current_user)
 	if response == None:
 		return { "succes": "user doesn't have followers"}
 	else: 
 		return response
 
-@router.get("/followers/following", response_description="list of all my following", response_model=List[FollowersModel])
+@router.get("/followers/following", response_description="list of all my following", response_model=List[UserToFrontModel])
 async def get_all_my_following(current_user: UserModel = Depends(get_current_active_user)):
 	response = await try_get_my_followings(current_user)
 	if response is None:
