@@ -53,6 +53,14 @@ async def try_get_users_following(current_user: UserModel):
 
 
 async def try_get_my_followers(current_user: UserModel):
+	"""find in db all the followers of the current_user
+
+	Args:
+		current_user (UserModel): active user
+
+	Returns:
+		Array: return array of the followers of the current_user
+	"""
 	find_followers = await db["followers"].find({"followingId": current_user["_id"]}).to_list(100)
 	print(find_followers)
 	my_followers = []
@@ -64,6 +72,14 @@ async def try_get_my_followers(current_user: UserModel):
 
 
 async def try_get_my_followings(current_user: UserModel):
+	"""find in db all the followings that current_user follows
+
+	Args:
+		current_user (UserModel): active user
+
+	Returns:
+		Array: array of the followings that current_user follows
+	"""
 	find_followings = await db["followers"].find({"userId": current_user["_id"]}).to_list(100)
 	my_followings = []
 	for i in find_followings:
@@ -73,6 +89,15 @@ async def try_get_my_followings(current_user: UserModel):
 	return my_followings
 
 async def try_delete_following(follower_id: str, current_user: UserModel):
+	"""delete in db a follow if current_user wants to unfollow a user
+
+	Args:
+		follower_id (str): id of the follower current_user xants to unfollow
+		current_user (UserModel): active_user
+
+	Returns:
+		Bool: True if follow has been suppressed
+	"""
 	await db["followers"].delete_one({"$and": [{"followingId": ObjectId(follower_id), "userId": current_user["_id"]} ]})
 	return True
 
