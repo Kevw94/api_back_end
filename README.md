@@ -13,7 +13,7 @@ __________________________
 
 GET: /USERS/ME
 
-PATCH: /USERQ/ME
+PATCH: /USERS/ME
 
 GET: /USERS/:ID
 

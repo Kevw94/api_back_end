@@ -33,3 +33,17 @@ class FollowersModel(BaseModel):
 				"followingId": "354345345",
 			}
 		}
+
+
+class FollowedModel(BaseModel):
+	followingId: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+
+	class Config:
+		allow_population_by_field_name = True
+		arbitrary_types_allowed = True
+		json_encoders = {ObjectId: str}
+		schema_extra = {
+			"example": {
+				"followingId": "354345345",
+			}
+		}
