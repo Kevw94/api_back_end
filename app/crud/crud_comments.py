@@ -44,3 +44,8 @@ async def try_patch_comment_in_db(comments_id: str, patch_comments: CommentsMode
 				}
 		})
 	return True
+
+
+async def try_get_my_comments_in_db(current_user: UserModel):
+	comments = await db["comments"].find({"userId": ObjectId(current_user["_id"])}).to_list(100)
+	return comments
