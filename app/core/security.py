@@ -2,8 +2,12 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt
 from app.core.config import config
 from datetime import datetime, timedelta
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, HTTPException, status, Security
+from fastapi.security import (
+    OAuth2PasswordBearer,
+    OAuth2PasswordRequestForm,
+    SecurityScopes,
+)
 
 from app.models.auth import TokenData
 from app.models.users import UserModel
@@ -63,7 +67,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 	return encoded_jwt
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(security_scopes: SecurityScopes, token: str = Depends(oauth2_scheme)):
 	"""Decode JWT token sent in headers and try to find user in db with information
 
 	Args:
@@ -77,10 +81,14 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 	Returns:
 		UserModel: return user 
 	"""
-	credentials_exception = HTTPException(
+	if security_scopes.scopes:
+		authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
+	else:
+		authenticate_value = f"Bearer"
+		credentials_exception = HTTPException(
 		status_code=status.HTTP_401_UNAUTHORIZED,
 		detail="Could not validate credentials",
-		headers={"WWW-Authenticate": "Bearer"},
+		headers={"WWW-Authenticate": authenticate_value},
 	)
 	try:
 		payload = jwt.decode(token, config["SECRET_KEY"], algorithms=config["ALGORITHM"])

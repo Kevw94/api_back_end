@@ -1,4 +1,5 @@
 import datetime
+from typing import Optional
 from pydantic import BaseModel, Field, EmailStr
 from bson import ObjectId
 
@@ -21,9 +22,11 @@ class PyObjectId(ObjectId):
 class UserModel(BaseModel):
 	id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
 	username: str = Field(...)
-	password: str = Field(...)
-	created_at: datetime.datetime = Field(...)
-	disabled: bool | None = None
+	password: Optional[str]
+	created_at: Optional[datetime.datetime]
+	disabled: Optional[bool] | None = None
+
+	
 
 	class Config:
 		allow_population_by_field_name = True
