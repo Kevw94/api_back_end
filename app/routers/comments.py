@@ -28,4 +28,4 @@ async def get_comment_from_post_id(post_id: str):
 @router.patch("/comments/{comments_id}")
 async def patch_comment_by_id(comments_id: str, patch_comments: CommentsModel = Body(...), current_user: UserModel = Depends(get_current_active_user)):
 	await try_patch_comment_in_db(comments_id, patch_comments, current_user)
-	return True
+	return {"success": "Comment updated"}
