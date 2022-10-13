@@ -20,3 +20,11 @@ Get followers
 Get followings
 Get posts of ther followings
 Delete a follow
+
+# implement crud logic for comments
+
+Post comments
+Get comments for user active
+Get comments with a post ID
+Patch comments with a comment ID and a user ID
+Delete comments with a comment ID and a user ID
