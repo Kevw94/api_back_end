@@ -19,3 +19,8 @@ async def insert_comment_in_db(current_user: UserModel, create_comments: Comment
 	}
 	await db["comments"].insert_one(comment)
 	return True
+
+
+async def try_get_comments_in_db(post_id: str):
+	comments = await db["comments"].find({"postId": ObjectId(post_id)}).to_list(100)
+	return comments
