@@ -49,3 +49,16 @@ async def try_patch_comment_in_db(comments_id: str, patch_comments: CommentsMode
 async def try_get_my_comments_in_db(current_user: UserModel):
 	comments = await db["comments"].find({"userId": ObjectId(current_user["_id"])}).to_list(100)
 	return comments
+
+
+async def try_delete_comment_in_db(comments_id: str, current_user: UserModel):
+	await db["comments"].delete_one({
+		"$and": 
+				[
+					{
+						"_id": ObjectId(comments_id),
+						"userId": current_user["_id"]
+					}
+				]
+	})
+	return True
