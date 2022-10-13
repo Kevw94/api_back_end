@@ -1,6 +1,7 @@
 import datetime
 from pydantic import BaseModel, Field, EmailStr
 from bson import ObjectId
+from typing import Optional
 
 
 class PyObjectId(ObjectId):
@@ -21,9 +22,9 @@ class PyObjectId(ObjectId):
 
 class PostModel(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-    userId: PyObjectId = Field(...)
-    content: str = Field(...)
-    created_at: datetime.datetime = None
+    userId: Optional[PyObjectId] = Field(...)
+    content: Optional[str] # optional content if post = ""
+    created_at: Optional[datetime.datetime] = None
 
     class Config:
         allow_population_by_field_name = True
