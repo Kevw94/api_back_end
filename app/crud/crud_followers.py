@@ -57,3 +57,8 @@ async def try_get_following_id(current_user: UserModel):
 	return find_followers
 
 
+async def try_get_my_followings(current_user: UserModel):
+	find_followings = await db["followers"].find({"userId": current_user["_id"]}).to_list(100)
+	return find_followings
+
+
