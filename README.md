@@ -71,7 +71,7 @@ __________________________
 
 POST: /COMMENTS
 
-GET: /COMMENTS/:ID
+GET: /COMMENTS/POSTS/:ID
 
 GET: /COMMENTS/ME
 
