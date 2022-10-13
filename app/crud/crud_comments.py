@@ -4,6 +4,7 @@ from bson import ObjectId
 from typing import List
 from app.models.comments import CommentsModel
 from app.models.followers import FollowedModel
+from pymongo import ReturnDocument
 
 from app.models.users import UserModel
 
@@ -24,3 +25,22 @@ async def insert_comment_in_db(current_user: UserModel, create_comments: Comment
 async def try_get_comments_in_db(post_id: str):
 	comments = await db["comments"].find({"postId": ObjectId(post_id)}).to_list(100)
 	return comments
+
+async def try_patch_comment_in_db(comments_id: str, patch_comments: CommentsModel, current_user: UserModel):
+	await db["comments"].update_one(
+		{
+			"$and": 
+				[
+					{
+						"_id": ObjectId(comments_id),
+						"userId": current_user["_id"]
+					}
+				]
+		},
+		{
+			"$set": 
+				{
+					"content": patch_comments.content
+				}
+		})
+	return True
