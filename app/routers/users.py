@@ -56,7 +56,7 @@ async def get_one_user_by_id( user_id: str):
 		return user_found_in_db
 
 
-@router.patch("/users/me", dependencies=[Depends(get_current_active_user)])
+@router.patch("/users/me", response_description="Username has been modified", dependencies=[Depends(get_current_active_user)])
 async def change_username_me(current_user: UserModel = Depends(get_current_active_user), modif_username: UserModel = Body(...)):
 	"""Change username of the active user
 
@@ -70,7 +70,7 @@ async def change_username_me(current_user: UserModel = Depends(get_current_activ
 	return await try_change_username(current_user, modif_username)
 
 
-@router.patch("/users/me/password")
+@router.patch("/users/me/password", response_description="Password of the active user has been modified")
 async def change_user_password(current_user: UserModel = Depends(get_current_active_user), modif_password: ModifPasswordModel = Body(...)):
 	"""Change the password of the active user
 
