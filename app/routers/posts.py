@@ -14,8 +14,7 @@ router = APIRouter(
 )
 
 
-@router.get("/posts", response_description="List all posts", response_model=List[PostModel],
-            dependencies=[Depends(get_current_active_user)])
+@router.get("/posts", response_description="List all posts", response_model=List[PostModel], dependencies=[Depends(get_current_active_user)])
 async def get_all_posts():
     """Gets all posts
 
@@ -25,8 +24,8 @@ async def get_all_posts():
     return await crud_get_all_posts()
 
 
-@router.post("/posts", response_description="Post created", dependencies=[Depends(get_current_active_user)])
-async def create_post(post: PostModel = Body(...)):
+@router.post("/posts", response_description="Post created")
+async def create_post(post: PostModel = Body(...), current_user: UserModel = Depends(get_current_active_user)):
     """Creates a post with the given body
 
     Args:
@@ -35,11 +34,11 @@ async def create_post(post: PostModel = Body(...)):
     Returns: success message
 
     """
-    return await crud_create_post(post)
+    return await crud_create_post(post, current_user)
 
 
-@router.patch("/posts/{post_id}", response_description="Post edited", dependencies=[Depends(get_current_active_user)])
-async def patch_post(post_id: str, patch: PatchModel = Body(...)):
+@router.patch("/posts/{post_id}", response_description="Post edited")
+async def patch_post(post_id: str, patch: PatchModel = Body(...), current_user: UserModel = Depends(get_current_active_user)):
     """Edits the targeted post with given body
 
     Args:
@@ -49,7 +48,7 @@ async def patch_post(post_id: str, patch: PatchModel = Body(...)):
     Returns: success message
 
     """
-    return await crud_patch_post(post_id, patch)
+    return await crud_patch_post(post_id, patch, current_user)
 
 
 @router.get('/posts/me', response_description="List of your posts", response_model=List[PostModel])
@@ -65,9 +64,8 @@ async def get_me_posts(current_user: UserModel = Depends(get_current_active_user
     return await crud_get_me_posts(current_user)
 
 
-@router.delete('/posts/{post_id}', response_description="Post successfully deleted",
-               dependencies=[Depends(get_current_active_user)])
-async def delete_post(post_id: str):
+@router.delete('/posts/{post_id}', response_description="Post successfully deleted")
+async def delete_post(post_id: str, current_user: UserModel = Depends(get_current_active_user)):
     """Deletes the targeted post
 
     Args:
@@ -76,4 +74,4 @@ async def delete_post(post_id: str):
     Returns: success message
 
     """
-    return await crud_delete_post(post_id)
+    return await crud_delete_post(post_id, current_user)
