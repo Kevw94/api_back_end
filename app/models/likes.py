@@ -1,6 +1,7 @@
 import datetime
 from pydantic import BaseModel, Field
 from bson import ObjectId
+from typing import Optional
 
 
 class PyObjectId(ObjectId):
@@ -22,7 +23,7 @@ class PyObjectId(ObjectId):
 class LikeModel(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     userId: PyObjectId = Field(...)
-    postId: PyObjectId = Field(...)
+    postId: Optional[PyObjectId]
     created_at: datetime.datetime = None
 
     class Config:

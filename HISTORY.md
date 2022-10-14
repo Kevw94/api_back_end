@@ -41,3 +41,8 @@ Users
 comments
 root
 followers
+
+# add review for the routes of posts and likes
+
+change logic for crud in DB for likes 
+change logic for crud in DB for posts 
