@@ -7,6 +7,6 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_description="For testing first connection of the API")
+@router.get("/", response_description="For testing first connection of the API", responses={200: {"description": "Welcome message"}})
 def root():
-    return {"message": "Welcome to the PyMongo tutorial!"}
+    return {"message": "Welcome to TWITWI API"}
