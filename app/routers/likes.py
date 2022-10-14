@@ -14,7 +14,7 @@ router = APIRouter(
 )
 
 
-@router.post('/likes/{post_id}', response_description="Post liked", dependencies=[Depends(get_current_active_user)])
+@router.post('/likes/{post_id}', response_description="Post liked", dependencies=[Depends(get_current_active_user)], responses={201: {"content": {"Like added"}}, 409: {"content": {"problem with creating like try again"}}})
 async def post_like(post_id: str, like: UserModel = Depends(get_current_active_user)):
     """Creates a like in db
 
@@ -28,7 +28,7 @@ async def post_like(post_id: str, like: UserModel = Depends(get_current_active_u
     return await crud_post_like(post_id, like)
 
 
-@router.get("/likes/posts/me", response_description="List of your like posts", response_model=List[PostModel])
+@router.get("/likes/posts/me", response_description="List of your like posts", response_model=List[PostModel], responses={200: {"description": "list of my liked posts"}})
 async def get_me_likes(current_user: UserModel = Depends(get_current_active_user)):
     """Gets all your liked posts
 
@@ -42,7 +42,7 @@ async def get_me_likes(current_user: UserModel = Depends(get_current_active_user
     return await crud_get_me_likes(current_user)
 
 
-@router.get("/likes/posts/{post_id}", response_description="List of post's likes", response_model=List[UserToFrontModel], dependencies=[Depends(get_current_active_user)])
+@router.get("/likes/posts/{post_id}", response_description="List of post's likes", response_model=List[UserToFrontModel], dependencies=[Depends(get_current_active_user)], responses={200: {"description": "list of users"}})
 async def get_post_likes(post_id: str):
     """Gets list of users who liked a post
 
@@ -57,7 +57,7 @@ async def get_post_likes(post_id: str):
 
 
 
-@router.delete("/likes/{post_id}", response_description="Your like was successfully removed")
+@router.delete("/likes/{post_id}", response_description="Your like was successfully removed", responses={201: {"content": {"Like has been deleted"}}, 409: {"content": {"Problem with deleting like try again"}}})
 async def delete_like(post_id: str, current_user: UserModel = Depends(get_current_active_user)):
     """Deletes a like
 

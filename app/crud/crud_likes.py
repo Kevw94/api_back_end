@@ -84,7 +84,7 @@ async def crud_delete_like(like_id):
 async def crud_delete_like(like_id, current_user: UserModel):
 	credentials_exception_problem = HTTPException(
 		status_code=status.HTTP_409_CONFLICT,
-		detail="There were a problem with creating like try again",
+		detail="There were a problem with deleting like try again",
 	)
 	await db["likes"].delete_one({
 		"$and": 
