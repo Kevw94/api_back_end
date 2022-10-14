@@ -5,28 +5,35 @@ from bson import ObjectId
 from app.core.config import db
 from app.models.likes import LikeModel
 from app.models.users import UserModel
+from fastapi import HTTPException, status
 
 
 
 async def crud_post_like(post_id, like: UserModel):
-	#TODO if liked return and prevent it
-    """Creates a like in db with given post Id
-
-    Args:
-        post_id: targeted post Id 
-        like: model
-
-    Returns: success message
-
-    """
-    created_at = datetime.datetime.now()
-    new_like = {
-        "userId": like["_id"],
-        "postId": ObjectId(post_id),
-        "created_at": created_at
-    }
-    db['likes'].insert_one(new_like)
-    return {"success": "Like added"}
+	credentials_exception = HTTPException(
+		status_code=status.HTTP_403_FORBIDDEN,
+		detail="This like already exits",
+	)
+	credentials_exception_problem = HTTPException(
+		status_code=status.HTTP_409_CONFLICT,
+		detail="There were a problem with creating like try again",
+	)
+	is_like_exists = await db["likes"].find_one({"$and": [{"userId": like["_id"], "postId": ObjectId(post_id)}]})
+	if is_like_exists is None:
+		created_at = datetime.datetime.now()
+		new_like = {
+			"userId": like["_id"],
+			"postId": ObjectId(post_id),
+			"created_at": created_at
+		}
+		db['likes'].insert_one(new_like)
+		is_like_inserted = await db["likes"].find_one({"$and": [{"userId": like["_id"], "postId": ObjectId(post_id), "created_at": created_at}]})
+		if is_like_inserted is not None:
+			return {"success": "Like added"}
+		else:
+			raise credentials_exception_problem
+	else:
+		raise credentials_exception
 
 
 async def crud_get_me_likes(user_data):
@@ -75,6 +82,10 @@ async def crud_delete_like(like_id):
 
     """
 async def crud_delete_like(like_id, current_user: UserModel):
+	credentials_exception_problem = HTTPException(
+		status_code=status.HTTP_409_CONFLICT,
+		detail="There were a problem with creating like try again",
+	)
 	await db["likes"].delete_one({
 		"$and": 
 				[
@@ -85,5 +96,9 @@ async def crud_delete_like(like_id, current_user: UserModel):
 					}
 				]
 	})
-	return {"successful": "success"}
 
+	is_like_deleted = await db["likes"].find_one({"$and": [{'_id': ObjectId(like_id), "userId": current_user["_id"]}]})
+	if is_like_deleted is None:
+		return {"successful": "like has been deleted"}
+	else:
+		raise credentials_exception_problem

@@ -18,7 +18,7 @@ async def try_create_user(user_auth: AuthModel):
 		success: 201
 	"""
 	credentials_exception = HTTPException(
-		status_code=status.HTTP_401_UNAUTHORIZED,
+		status_code=status.HTTP_403_FORBIDDEN,
 		detail="This username is already in use",
 	)
 	is_username_exists = await db["users"].find_one({"username": user_auth.username})

@@ -3,6 +3,7 @@ from app.core.config import db
 from bson import ObjectId
 from typing import List
 from app.models.followers import FollowedModel
+from fastapi import HTTPException, status
 
 from app.models.users import UserModel
 
@@ -12,11 +13,23 @@ async def try_insert_followers(current_user: UserModel, create_followers: Follow
 
 	Args:
 		current_user (UserModel): get active user
-		create_followers (str): id of the user I followed
+		create_followers (FollowedModel): id of the user I followed
+
+	Raises:
+		credentials_exception: There were a problem with following this user in db try again
+		credentials_exception_user_not_found: The follow already exist
 
 	Returns:
-		Bool: if users exists and follows doesn't exit -> return True 
+		Bool: follow has been created
 	"""
+	credentials_exception = HTTPException(
+		status_code=status.HTTP_403_FORBIDDEN,
+		detail="This follow already exists or user current_user wants to follow doesn't exist",
+	)
+	credentials_exception_user_not_found = HTTPException(
+		status_code=status.HTTP_409_CONFLICT,
+		detail="There were a problem with following this user try again",
+	)
 	created_at = datetime.now()
 	is_user_followed_exists = await  db["users"].find_one({"_id": create_followers.followingId })
 	is_user_followed = await db["followers"].find_one({"$and": [{"followingId": create_followers.followingId, "userId": current_user["_id"]}]})
@@ -27,10 +40,13 @@ async def try_insert_followers(current_user: UserModel, create_followers: Follow
 		"created_at": created_at
 		}
 		db["followers"].insert_one(new_follower)
-		return True
+		follow_created = await db["followers"].find_one({"$and": [{"followingId": create_followers.followingId, "userId": current_user["_id"], "created_at": created_at}]})
+		if follow_created is not None:
+			return True
+		else:
+			raise credentials_exception
 	else:
-		# TODO Raise exception
-		return False
+		raise credentials_exception_user_not_found
 	
 
 
@@ -99,7 +115,15 @@ async def try_delete_following(follower_id: str, current_user: UserModel):
 	Returns:
 		Bool: True if follow has been suppressed
 	"""
+	credentials_exception = HTTPException(
+		status_code=status.HTTP_409_CONFLICT,
+		detail="There were a problem with deleting this follow in db try again",
+	)
 	await db["followers"].delete_one({"$and": [{"followingId": ObjectId(follower_id), "userId": current_user["_id"]} ]})
-	return True
+	follow_deleted = await db["followers"].find_one({"$and": [{"followingId": ObjectId(follower_id), "userId": current_user["_id"]} ]})
+	if follow_deleted is None:
+		return True
+	else:
+		raise credentials_exception
 
 
