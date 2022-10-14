@@ -14,8 +14,7 @@ router = APIRouter(
 )
 
 
-@router.get('/messages/{contact_id}', response_description="Your conversation messages",
-            response_model=List[GetMessageModel])
+@router.get('/messages/{contact_id}', response_description="Your conversation messages", response_model=List[GetMessageModel], responses={200: {"description": "JSON of messages"}})
 async def get_messages(contact_id, current_user: UserModel = Depends(get_current_active_user)):
     """Gets messages between current user and other user
 
@@ -30,7 +29,7 @@ async def get_messages(contact_id, current_user: UserModel = Depends(get_current
     return await crud_get_messages(contact_id, current_user)
 
 
-@router.post("/messages", response_description="Message sent")
+@router.post("/messages", response_description="Message sent", responses={201: {"content": {"Message sent"}}})
 async def post_message(message: MessageModel = Body(...), current_user: UserModel = Depends(get_current_active_user)):
     """Post message with body data
 
