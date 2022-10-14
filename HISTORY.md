@@ -33,3 +33,11 @@ Delete comments with a comment ID and a user ID
 
 Patch username with a username in the request
 Patch usrer password with the current active password and the new password
+
+
+# add missing docstrings in where it was missing
+
+Users
+comments
+root
+followers
