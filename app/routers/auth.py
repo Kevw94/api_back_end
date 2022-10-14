@@ -14,7 +14,7 @@ router = APIRouter(
 )
 
 
-@router.post("/signup", response_description="create user")
+@router.post("/signup", response_description="create user", responses={201: {"content": {"success"}, }, 403: {"content": {"This username is already in use"}}})
 async def create_user(user_auth: AuthModel = Body(...)):
 	"""receive a user who want's to create himself
 
@@ -24,7 +24,7 @@ async def create_user(user_auth: AuthModel = Body(...)):
 	await try_create_user(user_auth)
 
 
-@router.post("/login", response_description="user Login")
+@router.post("/login", response_description="user Login", responses={201: {"content": {"access_token": "access_token", "token_type": "bearer"}, }, 401: {"content": {"Incorrect username or password"}}})
 async def try_login(user_login: LoginModel = Body(...)):
 	"""Try to login a user who wants to login
 

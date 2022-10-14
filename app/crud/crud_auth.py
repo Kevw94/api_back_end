@@ -34,7 +34,7 @@ async def try_create_user(user_auth: AuthModel):
 			"disabled": False
 		}
 		db["users"].insert_one(new_user)
-		return { "success": 201 }
+		return "success"
 
 
 
