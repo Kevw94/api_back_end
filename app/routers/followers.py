@@ -16,7 +16,7 @@ router = APIRouter(
 )
 
 
-@router.post("/followers", response_description="create follower")
+@router.post("/followers", response_description="create follower", responses={201: {"content": {"Follow has been created"} }, 403: {"content": {"This follow already exists or user current_user wants to follow doesn't exist"}}, 409: {"content": "There were a problem with following this user try again"}})
 async def create_follower(current_user: UserModel = Depends(get_current_active_user), create_followers: FollowedModel = Body(...)):
 	"""create a follow with current_user and an other user he wants to follow
 
@@ -34,7 +34,7 @@ async def create_follower(current_user: UserModel = Depends(get_current_active_u
 		return {"error": "Sub already exists or users followed doesn't exist"}
 
 
-@router.get("/posts/followers/me", response_description="list of posts I Follow users", dependencies=[Depends(get_current_active_user)], response_model=List[PostModel])
+@router.get("/posts/followers/me", response_description="list of posts I Follow users", dependencies=[Depends(get_current_active_user)], response_model=List[PostModel], responses={200: {"description": "all the posts for the users current_user follows"}})
 async def posts_users_me_follow(current_user: UserModel = Depends(get_current_active_user)):
 	"""get the posts of the followers current_user follows 
 
@@ -48,7 +48,7 @@ async def posts_users_me_follow(current_user: UserModel = Depends(get_current_ac
 	return posts_users
 
 
-@router.get('/followers/me', response_description="list of all my followers", response_model=List[UserToFrontModel])
+@router.get('/followers/me', response_description="list of all my followers", response_model=List[UserToFrontModel], responses={200: {"description": "return all followers of the current_user"}})
 async def get_all_my_followers(current_user: UserModel = Depends(get_current_active_user)):
 	"""get all the users that follows the current_user
 
@@ -65,7 +65,7 @@ async def get_all_my_followers(current_user: UserModel = Depends(get_current_act
 		return my_followers
 
 
-@router.get("/followers/following", response_description="list of all my following", response_model=List[UserToFrontModel])
+@router.get("/followers/following", response_description="list of all my following", response_model=List[UserToFrontModel], responses={200: {"description": "All the users that current_user follows"}})
 async def get_all_my_following(current_user: UserModel = Depends(get_current_active_user)):
 	"""get all the users that current_user is following
 
@@ -82,7 +82,7 @@ async def get_all_my_following(current_user: UserModel = Depends(get_current_act
 		return my_followings
 
 
-@router.delete('/followers/{follower_id}', response_description="successful deleted")
+@router.delete('/followers/{follower_id}', response_description="successful deleted",  responses={201: {"content": {"user has been unfollowed"}}, 409: {"content": {"problem with deleting this follow in db try again"}}})
 async def delete_following_by_id(follower_id: str, current_user: UserModel = Depends(get_current_active_user)):
 	"""delete follow if current_user wants to unfollow a user
 
