@@ -4,12 +4,14 @@ from bson import ObjectId
 
 from app.core.config import db
 from app.models.likes import LikeModel
+from app.models.users import UserModel
 
 
-async def crud_post_like(post_id, like: LikeModel):
+async def crud_post_like(post_id, like: UserModel):
+	#TODO if liked return and prevent it
     created_at = datetime.datetime.now()
     new_like = {
-        "userId": like.userId,
+        "userId": like["_id"],
         "postId": ObjectId(post_id),
         "created_at": created_at
     }
@@ -33,6 +35,15 @@ async def crud_get_post_likes(post_id):
     return users
 
 
-async def crud_delete_like(like_id):
-    await db['likes'].delete_one({'_id': ObjectId(like_id)})
-    return {"successful": "like removed"}
+async def crud_delete_like(like_id, current_user: UserModel):
+	await db["likes"].delete_one({
+		"$and": 
+				[
+					{
+						'_id': ObjectId(like_id),
+						"userId": current_user["_id"]
+						
+					}
+				]
+	})
+	return {"successful": "success"}
