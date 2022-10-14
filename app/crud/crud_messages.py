@@ -1,9 +1,19 @@
 import datetime
 
 from bson import ObjectId
+from fastapi import HTTPException, status
 
 from app.core.config import db
 from app.models.messages import MessageModel
+
+credentials_exception = HTTPException(
+    status_code=status.HTTP_403_FORBIDDEN,
+    detail="No messages",
+)
+credentials_exception_problem = HTTPException(
+    status_code=status.HTTP_409_CONFLICT,
+    detail="There were a problem with updating user in db, try again",
+)
 
 
 async def crud_get_messages(contact_id, current_user):
@@ -17,7 +27,7 @@ async def crud_get_messages(contact_id, current_user):
         object: JSON of all messages
 
     """
-    return await db['messages'].find({
+    messages = await db['messages'].find({
         "$or":
             [
                 {"senderId": ObjectId(current_user['_id'])},
@@ -26,6 +36,10 @@ async def crud_get_messages(contact_id, current_user):
                 {"receiverId": ObjectId(contact_id)}
             ]
     }).to_list(1000)
+    if len(messages) > 0:
+        return messages
+    else:
+        raise credentials_exception
 
 
 async def crud_post_message(current_user, message: MessageModel):
@@ -47,4 +61,10 @@ async def crud_post_message(current_user, message: MessageModel):
         "created_at": created_at
     }
     await db['messages'].insert_one(new_message)
-    return {"success": "message sent"}
+    find_msg = await crud_get_messages(message.receiverId, current_user)
+    print(find_msg)
+    try:
+        if len(find_msg) > 0:
+            return {"success": "message sent"}
+    except:
+        raise credentials_exception_problem
