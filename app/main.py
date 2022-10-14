@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 from fastapi import FastAPI
 from app.core.config import config
-from app.routers import auth, users, root, posts
+from app.routers import auth, users, root, posts, likes
 
 app = FastAPI(
     docs_url=f"{config['APP_PREFIX']}/docs",
@@ -12,3 +12,4 @@ app.include_router(users.router)
 app.include_router(root.router)
 app.include_router(auth.router)
 app.include_router(posts.router)
+app.include_router(likes.router)

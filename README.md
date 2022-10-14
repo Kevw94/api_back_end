@@ -47,11 +47,11 @@ __________________________
 
 ## LIKES
 
-POST: /LIKES
+POST: /LIKES/:ID
 
-GET: /LIKES/ME
+GET: /LIKES/POSTS/ME
 
-GET: /LIKES
+GET: /LIKES/POSTS/:ID
 
 DELETE: /LIKES/:ID
 
