@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-@router.get("/users", response_description="List of all user", response_model=List[UserToFrontModel], dependencies=[Depends(get_current_active_user)])
+@router.get("/users", response_description="List of all user", response_model=List[UserToFrontModel], dependencies=[Depends(get_current_active_user)], responses={200: {"description": "List of all users with necessary information"}})
 async def get_user():
 	"""Get a list of all users
 
@@ -22,7 +22,7 @@ async def get_user():
 	"""
 	return await get_all_users()
 
-@router.get("/users/me", response_description="return active user", response_model=UserToFrontModel)
+@router.get("/users/me", response_description="return active user", response_model=UserToFrontModel, responses={200: {"description": "Information about active user"}})
 async def read_users_me(current_user: UserModel = Depends(get_current_active_user)):
 	"""Get info about active_user
 
@@ -35,7 +35,7 @@ async def read_users_me(current_user: UserModel = Depends(get_current_active_use
 	return current_user
 
 
-@router.get("/users/{user_id}", response_description="One user by ID", response_model=UserToFrontModel, dependencies=[Depends(get_current_active_user)])
+@router.get("/users/{user_id}", response_description="One user by ID", response_model=UserToFrontModel, dependencies=[Depends(get_current_active_user)], responses={200: {"description": "User we get by its ID"}, 403: {"content": {"User ID doesn't exist"}}})
 async def get_one_user_by_id( user_id: str):
 	"""Get one user by its ID
 
@@ -56,7 +56,7 @@ async def get_one_user_by_id( user_id: str):
 		return user_found_in_db
 
 
-@router.patch("/users/me", response_description="Username has been modified", dependencies=[Depends(get_current_active_user)])
+@router.patch("/users/me", response_description="Username has been modified", dependencies=[Depends(get_current_active_user)], responses={201: {"content": {"Username has been modified"}}, 403: {"content": {"username already exists"}}, 409: {"content": {"poblem to update username in db"}}})
 async def change_username_me(current_user: UserModel = Depends(get_current_active_user), modif_username: UserModel = Body(...)):
 	"""Change username of the active user
 
@@ -70,7 +70,7 @@ async def change_username_me(current_user: UserModel = Depends(get_current_activ
 	return await try_change_username(current_user, modif_username)
 
 
-@router.patch("/users/me/password", response_description="Password of the active user has been modified")
+@router.patch("/users/me/password", response_description="Password of the active user has been modified", responses={201: {"content": {"Password has been changed or password incorrect"}}})
 async def change_user_password(current_user: UserModel = Depends(get_current_active_user), modif_password: ModifPasswordModel = Body(...)):
 	"""Change the password of the active user
 
