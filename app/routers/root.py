@@ -7,6 +7,6 @@ router = APIRouter(
 )
 
 
-@router.get("/")
+@router.get("/", response_description="For testing first connection of the API")
 def root():
     return {"message": "Welcome to the PyMongo tutorial!"}
