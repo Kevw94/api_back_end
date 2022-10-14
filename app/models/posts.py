@@ -22,7 +22,7 @@ class PyObjectId(ObjectId):
 
 class PostModel(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-    userId: Optional[PyObjectId] = Field(...)
+    userId: Optional[PyObjectId]
     content: Optional[str] # optional content if post = ""
     created_at: Optional[datetime.datetime] = None
 

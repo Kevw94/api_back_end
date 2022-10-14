@@ -3,7 +3,8 @@ import datetime
 from bson import ObjectId
 
 from app.core.config import db
-from app.models.posts import PostModel
+from app.models.posts import PatchModel, PostModel
+from app.models.users import UserModel
 
 
 async def crud_get_all_posts():
@@ -16,7 +17,7 @@ async def crud_get_all_posts():
     return await db["posts"].find().to_list(500)
 
 
-async def crud_create_post(post: PostModel):
+async def crud_create_post(post: PostModel, current_user: UserModel):
     """Function to create a post and adding created_at field
 
     Args:
@@ -28,7 +29,7 @@ async def crud_create_post(post: PostModel):
     """
     created_at = datetime.datetime.now()
     new_post = {
-        "userId": post.userId,
+        "userId": ObjectId(current_user["_id"]),
         "content": post.content,
         "created_at": created_at
     }
@@ -36,7 +37,7 @@ async def crud_create_post(post: PostModel):
     return {"success": "Post created"}
 
 
-async def crud_patch_post(post_id, patch):
+async def crud_patch_post(post_id, patch: PatchModel, current_user: UserModel):
     """Function to edit the content of a precise post by its ID
 
     Args:
@@ -47,9 +48,17 @@ async def crud_patch_post(post_id, patch):
         object: Success message
 
     """
-    db['posts'].update_one({"_id": ObjectId(post_id)},
-                           {"$set": {"content": patch.content}}
-                           )
+    db['posts'].update_one({
+		"$and": 
+				[
+					{
+						"_id": ObjectId(post_id),
+						"userId": current_user["_id"]
+						
+					}
+				]
+		},
+		{"$set": {"content": patch.content}})
     return {"Successful": 'Updated post'}
 
 
@@ -67,7 +76,7 @@ async def crud_get_me_posts(user_data):
     return posts
 
 
-async def crud_delete_post(post_id):
+async def crud_delete_post(post_id, current_user: UserModel):
     """Function to delete a precise post by its ID
 
     Args:
@@ -76,5 +85,14 @@ async def crud_delete_post(post_id):
     Returns:
         object: Success message
     """
-    await db['posts'].delete_one({'_id': ObjectId(post_id)})
+    await db['posts'].delete_one({
+		"$and": 
+				[
+					{
+						'_id': ObjectId(post_id),
+						"userId": current_user["_id"]
+						
+					}
+				]
+		})
     return {"Successful": "Deletion successful"}
