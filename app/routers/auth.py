@@ -38,7 +38,6 @@ async def try_login(user_login: LoginModel = Body(...)):
 		json: access token with the acces_token and the authentication method
 	"""
 	user = await try_login_user(user_login)
-	print(user)
 	if not user:
 		raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

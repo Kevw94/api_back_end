@@ -13,9 +13,11 @@ __________________________
 
 GET: /USERS/ME
 
-PATCH: /USERQ/ME
+PATCH: /USERS/ME
 
 GET: /USERS/:ID
+
+PATCH: /USERS/ME/PASSWORD
 
 __________________________
 
@@ -40,6 +42,8 @@ GET: /POSTS/FOLLOWERS/ME
 POST: /FOLLOWERS
 
 GET: /FOLLOWERS/ME
+
+GET: /FOLLOWERS/FOLLOWING
 
 DELETE: /FOLLOWERS/:ID
 
@@ -69,7 +73,9 @@ __________________________
 
 POST: /COMMENTS
 
-GET: /COMMENTS/:ID
+GET: /COMMENTS/POSTS/:ID
+
+PATCH: /COMMENTS/:ID
 
 GET: /COMMENTS/ME
 

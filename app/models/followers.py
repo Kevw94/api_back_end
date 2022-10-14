@@ -20,8 +20,10 @@ class PyObjectId(ObjectId):
 
 
 class FollowersModel(BaseModel):
-	userId: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-	followingId: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+	id: Optional[PyObjectId] = Field(default_factory=PyObjectId, alias="_id")
+	userId: Optional[PyObjectId] = Field(default_factory=PyObjectId)
+	followingId: Optional[PyObjectId] = Field(default_factory=PyObjectId)
+	created_at: Optional[datetime.datetime]
 
 	class Config:
 		allow_population_by_field_name = True
@@ -30,6 +32,20 @@ class FollowersModel(BaseModel):
 		schema_extra = {
 			"example": {
 				"userId": "23432434223",
+				"followingId": "354345345",
+			}
+		}
+
+
+class FollowedModel(BaseModel):
+	followingId: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+
+	class Config:
+		allow_population_by_field_name = True
+		arbitrary_types_allowed = True
+		json_encoders = {ObjectId: str}
+		schema_extra = {
+			"example": {
 				"followingId": "354345345",
 			}
 		}
