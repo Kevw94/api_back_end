@@ -100,7 +100,7 @@ async def try_check_current_password(current_user: UserModel, modif_password: Mo
 
 
 async def try_change_password(is_user_checked: UserModel, modif_password: ModifPasswordModel):
-	"""Get the hashed new password and update the okder password of the user
+	"""Get the hashed new password and update the older password of the user
 
 	Args:
 		is_user_checked (UserModel): curent_user
